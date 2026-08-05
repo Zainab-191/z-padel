@@ -1,0 +1,9 @@
+bin/
+obj/
+*.user
+.vs/
+logs/
+*.log
+
+# Local dev secrets if ever used instead of appsettings.Development.json
+appsettings.Local.json

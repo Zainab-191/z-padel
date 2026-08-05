@@ -1,0 +1,6 @@
+.DS_Store
+Thumbs.db
+*.swp
+
+# Local-only Claude Code tool permissions, not project config
+.claude/settings.local.json
