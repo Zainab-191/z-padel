@@ -3,9 +3,11 @@ import { Link, useParams } from "react-router-dom";
 import { getBookingByReference, initiateThawaniPayment } from "../api/bookings";
 import { extractApiError } from "../api/client";
 import { formatOMR } from "../utils/format";
+import { useLanguage } from "../i18n/LanguageContext";
 
 export default function ThawaniCancelledPage() {
   const { reference } = useParams();
+  const { t, language } = useLanguage();
   const [booking, setBooking] = useState(null);
   const [error, setError] = useState(null);
   const [retrying, setRetrying] = useState(false);
@@ -31,10 +33,20 @@ export default function ThawaniCancelledPage() {
   return (
     <div className="mx-auto max-w-lg px-4 py-16 text-center">
       <p className="mb-2 text-2xl">⏸</p>
-      <h1 className="mb-2 text-lg font-bold text-court-900">تم إلغاء عملية الدفع</h1>
+      <h1 className="mb-2 text-lg font-bold text-court-900">{t("thawaniCancelled.title")}</h1>
       <p className="mb-6 text-sm text-gray-500">
-        حجزك رقم <span className="font-mono">{reference}</span> بانتظار الدفع. سيتم تحرير الأوقات تلقائياً إن لم
-        يكتمل الدفع خلال 10 دقائق.
+        {(() => {
+          const [before, after] = t("thawaniCancelled.message").split("{{ref}}");
+          return (
+            <>
+              {before}
+              <span className="font-mono" dir="ltr">
+                {reference}
+              </span>
+              {after}
+            </>
+          );
+        })()}
       </p>
 
       {error && <p className="mb-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
@@ -46,12 +58,12 @@ export default function ThawaniCancelledPage() {
           disabled={retrying}
           className="mb-3 w-full rounded-full bg-ball-500 py-3 font-bold text-court-900 shadow-md disabled:opacity-50"
         >
-          {retrying ? "جارٍ التحويل..." : `إعادة المحاولة — ${booking ? formatOMR(booking.totalAmount) : ""}`}
+          {retrying ? t("thawaniCancelled.retrying") : `${t("thawaniCancelled.retry")} — ${booking ? formatOMR(booking.totalAmount, language) : ""}`}
         </button>
       )}
 
       <Link to="/" className="text-sm text-court-700 underline">
-        العودة للرئيسية
+        {t("common.back")}
       </Link>
     </div>
   );

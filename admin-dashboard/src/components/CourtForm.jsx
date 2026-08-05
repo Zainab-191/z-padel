@@ -1,8 +1,10 @@
 import { useState } from "react";
+import { useLanguage } from "../i18n/LanguageContext";
 
 const emptyForm = { name: "", description: "", openingTime: "08:00", closingTime: "23:00", basePricePerHour: "" };
 
 export default function CourtForm({ initial, onSubmit, onCancel, submitting }) {
+  const { t } = useLanguage();
   const [form, setForm] = useState(initial ? { ...initial } : emptyForm);
 
   function set(field, value) {
@@ -24,7 +26,7 @@ export default function CourtForm({ initial, onSubmit, onCancel, submitting }) {
   return (
     <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-3 rounded-xl bg-court-50 p-4">
       <div className="col-span-2">
-        <label className="mb-1 block text-xs text-gray-600">اسم الملعب</label>
+        <label className="mb-1 block text-xs text-gray-600">{t("courts.name")}</label>
         <input
           required
           value={form.name}
@@ -33,7 +35,7 @@ export default function CourtForm({ initial, onSubmit, onCancel, submitting }) {
         />
       </div>
       <div className="col-span-2">
-        <label className="mb-1 block text-xs text-gray-600">وصف (اختياري)</label>
+        <label className="mb-1 block text-xs text-gray-600">{t("courts.description")}</label>
         <input
           value={form.description || ""}
           onChange={(e) => set("description", e.target.value)}
@@ -41,7 +43,7 @@ export default function CourtForm({ initial, onSubmit, onCancel, submitting }) {
         />
       </div>
       <div>
-        <label className="mb-1 block text-xs text-gray-600">وقت الفتح</label>
+        <label className="mb-1 block text-xs text-gray-600">{t("courts.openingTime")}</label>
         <input
           type="time"
           required
@@ -51,7 +53,7 @@ export default function CourtForm({ initial, onSubmit, onCancel, submitting }) {
         />
       </div>
       <div>
-        <label className="mb-1 block text-xs text-gray-600">وقت الإغلاق</label>
+        <label className="mb-1 block text-xs text-gray-600">{t("courts.closingTime")}</label>
         <input
           type="time"
           required
@@ -61,7 +63,7 @@ export default function CourtForm({ initial, onSubmit, onCancel, submitting }) {
         />
       </div>
       <div>
-        <label className="mb-1 block text-xs text-gray-600">السعر الأساسي للساعة (ر.ع)</label>
+        <label className="mb-1 block text-xs text-gray-600">{t("courts.basePrice")}</label>
         <input
           type="number"
           min={0}
@@ -76,20 +78,20 @@ export default function CourtForm({ initial, onSubmit, onCancel, submitting }) {
         <div className="flex items-end">
           <label className="flex items-center gap-2 text-sm">
             <input type="checkbox" checked={form.isActive} onChange={(e) => set("isActive", e.target.checked)} />
-            نشط
+            {t("courts.active")}
           </label>
         </div>
       )}
       <div className="col-span-2 flex justify-end gap-2 pt-1">
         <button type="button" onClick={onCancel} className="rounded-lg px-4 py-1.5 text-sm text-gray-600">
-          إلغاء
+          {t("common.cancel")}
         </button>
         <button
           type="submit"
           disabled={submitting}
           className="rounded-lg bg-court-600 px-4 py-1.5 text-sm font-bold text-white disabled:opacity-50"
         >
-          {submitting ? "جارٍ الحفظ..." : "حفظ"}
+          {submitting ? t("common.saving") : t("common.save")}
         </button>
       </div>
     </form>

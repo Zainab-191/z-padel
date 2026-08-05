@@ -1,8 +1,10 @@
 import { formatOMR, formatTime } from "../utils/format";
 import { useCart } from "../context/CartContext";
+import { useLanguage } from "../i18n/LanguageContext";
 
 export default function TimeSlotGrid({ date, slots, loading, error }) {
   const { toggleSlot, has } = useCart();
+  const { t, language } = useLanguage();
 
   if (loading) {
     return (
@@ -20,9 +22,7 @@ export default function TimeSlotGrid({ date, slots, loading, error }) {
 
   if (slots.length === 0) {
     return (
-      <p className="rounded-lg bg-gray-50 px-4 py-6 text-center text-sm text-gray-500">
-        لا توجد أوقات متاحة في هذا اليوم
-      </p>
+      <p className="rounded-lg bg-gray-50 px-4 py-6 text-center text-sm text-gray-500">{t("home.noSlots")}</p>
     );
   }
 
@@ -41,9 +41,9 @@ export default function TimeSlotGrid({ date, slots, loading, error }) {
                 : "border-court-200 bg-white text-court-900 hover:border-court-400"
             }`}
           >
-            <span>{formatTime(slot.startTime)}</span>
+            <span>{formatTime(slot.startTime, language)}</span>
             <span className={`mt-1 text-xs ${selected ? "text-court-100" : "text-gray-400"}`}>
-              {formatOMR(slot.estimatedPricePerHour)}
+              {formatOMR(slot.estimatedPricePerHour, language)}
             </span>
           </button>
         );

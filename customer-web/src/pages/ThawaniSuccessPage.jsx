@@ -3,9 +3,11 @@ import { Link, useParams } from "react-router-dom";
 import BookingTicket from "../components/BookingTicket";
 import { confirmThawaniPayment } from "../api/bookings";
 import { extractApiError } from "../api/client";
+import { useLanguage } from "../i18n/LanguageContext";
 
 export default function ThawaniSuccessPage() {
   const { reference } = useParams();
+  const { t } = useLanguage();
   const [booking, setBooking] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -20,13 +22,13 @@ export default function ThawaniSuccessPage() {
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-10">
-      {loading && <p className="text-center text-gray-400">جارٍ التحقق من الدفع...</p>}
+      {loading && <p className="text-center text-gray-400">{t("thawaniSuccess.verifying")}</p>}
 
       {error && (
         <div className="text-center">
           <p className="mb-4 rounded-lg bg-red-50 px-4 py-3 text-red-700">{error}</p>
           <Link to="/" className="text-court-700 underline">
-            العودة للرئيسية
+            {t("common.back")}
           </Link>
         </div>
       )}
@@ -34,16 +36,14 @@ export default function ThawaniSuccessPage() {
       {booking && (
         <>
           {booking.status === 1 ? (
-            <p className="mb-6 text-center text-lg font-bold text-court-700">تم تأكيد حجزك بنجاح 🎾</p>
+            <p className="mb-6 text-center text-lg font-bold text-court-700">{t("thawaniSuccess.confirmed")}</p>
           ) : (
-            <p className="mb-6 text-center text-lg font-bold text-red-600">
-              لم يتم تأكيد الدفع. تم تحرير الأوقات المحجوزة، يمكنك المحاولة مرة أخرى.
-            </p>
+            <p className="mb-6 text-center text-lg font-bold text-red-600">{t("thawaniSuccess.failed")}</p>
           )}
           <BookingTicket booking={booking} />
           <div className="mt-6 text-center">
             <Link to="/" className="text-sm text-court-700 underline">
-              العودة للرئيسية
+              {t("common.back")}
             </Link>
           </div>
         </>

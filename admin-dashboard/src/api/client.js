@@ -1,4 +1,5 @@
 import axios from "axios";
+import { tPlain } from "../i18n/LanguageContext";
 
 const TOKEN_KEY = "zpadel_admin_token";
 
@@ -42,9 +43,9 @@ export function extractApiError(error) {
   const data = error?.response?.data;
   if (data?.errors) {
     const firstField = Object.keys(data.errors)[0];
-    return { message: data.errors[firstField]?.[0] || data.title || "بيانات غير صحيحة", details: data };
+    return { message: data.errors[firstField]?.[0] || data.title || tPlain("errors.invalidData"), details: data };
   }
   if (data?.detail) return { message: data.detail, details: data };
   if (data?.title) return { message: data.title, details: data };
-  return { message: "حدث خطأ غير متوقع، حاول مرة أخرى.", details: null };
+  return { message: tPlain("errors.generic"), details: null };
 }

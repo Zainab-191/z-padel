@@ -1,4 +1,7 @@
-export default function ConfirmDialog({ open, title, message, confirmLabel = "تأكيد", onConfirm, onCancel, danger }) {
+import { useLanguage } from "../i18n/LanguageContext";
+
+export default function ConfirmDialog({ open, title, message, confirmLabel, onConfirm, onCancel, danger }) {
+  const { t } = useLanguage();
   if (!open) return null;
 
   return (
@@ -8,7 +11,7 @@ export default function ConfirmDialog({ open, title, message, confirmLabel = "ت
         <p className="mb-5 text-sm text-gray-600">{message}</p>
         <div className="flex justify-end gap-2">
           <button onClick={onCancel} className="rounded-lg px-4 py-2 text-sm text-gray-600 hover:bg-gray-100">
-            إلغاء
+            {t("common.cancel")}
           </button>
           <button
             onClick={onConfirm}
@@ -16,7 +19,7 @@ export default function ConfirmDialog({ open, title, message, confirmLabel = "ت
               danger ? "bg-red-600 hover:bg-red-700" : "bg-court-600 hover:bg-court-700"
             }`}
           >
-            {confirmLabel}
+            {confirmLabel || t("common.confirm")}
           </button>
         </div>
       </div>

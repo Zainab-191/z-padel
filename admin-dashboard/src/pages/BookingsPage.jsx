@@ -4,11 +4,13 @@ import { getCourts } from "../api/courts";
 import { extractApiError } from "../api/client";
 import ConfirmDialog from "../components/ConfirmDialog";
 import { formatOMR, formatTime } from "../utils/format";
-import { PAYMENT_METHOD_META, PAYMENT_METHOD_OPTIONS, STATUS_META, STATUS_OPTIONS } from "../utils/bookingMeta";
+import { buildPaymentMethodOptions, buildStatusOptions, STATUS_CLASS } from "../utils/bookingMeta";
+import { useLanguage } from "../i18n/LanguageContext";
 
 const emptyFilter = { courtId: "", date: "", status: "", paymentMethod: "", phone: "" };
 
 export default function BookingsPage() {
+  const { t, dict, language } = useLanguage();
   const [courts, setCourts] = useState([]);
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -16,6 +18,9 @@ export default function BookingsPage() {
   const [filter, setFilter] = useState(emptyFilter);
   const [cancelTarget, setCancelTarget] = useState(null);
   const [cancelling, setCancelling] = useState(false);
+
+  const statusOptions = buildStatusOptions(dict);
+  const paymentMethodOptions = buildPaymentMethodOptions(dict);
 
   useEffect(() => {
     getCourts().then(setCourts).catch(() => {});
@@ -48,7 +53,7 @@ export default function BookingsPage() {
 
   return (
     <div>
-      <h1 className="mb-6 text-xl font-extrabold text-court-900">الحجوزات</h1>
+      <h1 className="mb-6 text-xl font-extrabold text-court-900">{t("bookings.title")}</h1>
 
       <div className="mb-4 grid grid-cols-2 gap-3 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-black/5 sm:grid-cols-5">
         <select
@@ -56,7 +61,7 @@ export default function BookingsPage() {
           onChange={(e) => setFilter((f) => ({ ...f, courtId: e.target.value }))}
           className="rounded-lg border border-gray-200 px-2 py-1.5 text-sm"
         >
-          <option value="">كل الملاعب</option>
+          <option value="">{t("bookings.allCourts")}</option>
           {courts.map((c) => (
             <option key={c.id} value={c.id}>
               {c.name}
@@ -76,7 +81,7 @@ export default function BookingsPage() {
           onChange={(e) => setFilter((f) => ({ ...f, status: e.target.value }))}
           className="rounded-lg border border-gray-200 px-2 py-1.5 text-sm"
         >
-          {STATUS_OPTIONS.map((o) => (
+          {statusOptions.map((o) => (
             <option key={o.value} value={o.value}>
               {o.label}
             </option>
@@ -88,7 +93,7 @@ export default function BookingsPage() {
           onChange={(e) => setFilter((f) => ({ ...f, paymentMethod: e.target.value }))}
           className="rounded-lg border border-gray-200 px-2 py-1.5 text-sm"
         >
-          {PAYMENT_METHOD_OPTIONS.map((o) => (
+          {paymentMethodOptions.map((o) => (
             <option key={o.value} value={o.value}>
               {o.label}
             </option>
@@ -97,7 +102,7 @@ export default function BookingsPage() {
 
         <input
           type="text"
-          placeholder="رقم الهاتف"
+          placeholder={t("bookings.phonePlaceholder")}
           value={filter.phone}
           onChange={(e) => setFilter((f) => ({ ...f, phone: e.target.value }))}
           className="rounded-lg border border-gray-200 px-2 py-1.5 text-sm"
@@ -109,16 +114,16 @@ export default function BookingsPage() {
 
       <div className="overflow-x-auto rounded-2xl bg-white shadow-sm ring-1 ring-black/5">
         <table className="w-full min-w-[800px] text-sm">
-          <thead className="bg-gray-50 text-right text-xs text-gray-500">
+          <thead className="bg-gray-50 text-start text-xs text-gray-500">
             <tr>
-              <th className="px-4 py-2 font-medium">المرجع</th>
-              <th className="px-4 py-2 font-medium">الملعب</th>
-              <th className="px-4 py-2 font-medium">التاريخ</th>
-              <th className="px-4 py-2 font-medium">الوقت</th>
-              <th className="px-4 py-2 font-medium">السعر</th>
-              <th className="px-4 py-2 font-medium">الحالة</th>
-              <th className="px-4 py-2 font-medium">الدفع</th>
-              <th className="px-4 py-2 font-medium">العميل</th>
+              <th className="px-4 py-2 font-medium">{t("bookings.colReference")}</th>
+              <th className="px-4 py-2 font-medium">{t("bookings.colCourt")}</th>
+              <th className="px-4 py-2 font-medium">{t("bookings.colDate")}</th>
+              <th className="px-4 py-2 font-medium">{t("bookings.colTime")}</th>
+              <th className="px-4 py-2 font-medium">{t("bookings.colPrice")}</th>
+              <th className="px-4 py-2 font-medium">{t("bookings.colStatus")}</th>
+              <th className="px-4 py-2 font-medium">{t("bookings.colPayment")}</th>
+              <th className="px-4 py-2 font-medium">{t("bookings.colCustomer")}</th>
               <th className="px-4 py-2"></th>
             </tr>
           </thead>
@@ -126,44 +131,41 @@ export default function BookingsPage() {
             {loading && (
               <tr>
                 <td colSpan={9} className="px-4 py-6 text-center text-gray-400">
-                  جارٍ التحميل...
+                  {t("common.loading")}
                 </td>
               </tr>
             )}
             {!loading &&
-              rows.map((r) => {
-                const status = STATUS_META[r.status] ?? STATUS_META[0];
-                return (
-                  <tr key={r.bookingId + r.courtId + r.startTime} className="border-t border-gray-100">
-                    <td className="px-4 py-2 font-mono text-xs">{r.reference}</td>
-                    <td className="px-4 py-2">{r.courtName}</td>
-                    <td className="px-4 py-2">{r.date}</td>
-                    <td className="px-4 py-2">{formatTime(r.startTime)}</td>
-                    <td className="px-4 py-2">{formatOMR(r.price)}</td>
-                    <td className="px-4 py-2">
-                      <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${status.className}`}>
-                        {status.label}
-                      </span>
-                    </td>
-                    <td className="px-4 py-2">{PAYMENT_METHOD_META[r.paymentMethod]}</td>
-                    <td className="px-4 py-2" dir="ltr">
-                      <div>{r.guestPhone}</div>
-                      {r.guestName && <div className="text-xs text-gray-400">{r.guestName}</div>}
-                    </td>
-                    <td className="px-4 py-2 text-left">
-                      {(r.status === 0 || r.status === 1) && (
-                        <button onClick={() => setCancelTarget(r)} className="text-red-600 underline">
-                          إلغاء
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
+              rows.map((r) => (
+                <tr key={r.bookingId + r.courtId + r.startTime} className="border-t border-gray-100">
+                  <td className="px-4 py-2 font-mono text-xs">{r.reference}</td>
+                  <td className="px-4 py-2">{r.courtName}</td>
+                  <td className="px-4 py-2">{r.date}</td>
+                  <td className="px-4 py-2">{formatTime(r.startTime, language)}</td>
+                  <td className="px-4 py-2">{formatOMR(r.price, language)}</td>
+                  <td className="px-4 py-2">
+                    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_CLASS[r.status] ?? STATUS_CLASS[0]}`}>
+                      {dict.status[r.status]}
+                    </span>
+                  </td>
+                  <td className="px-4 py-2">{dict.paymentMethod[r.paymentMethod]}</td>
+                  <td className="px-4 py-2" dir="ltr">
+                    <div>{r.guestPhone}</div>
+                    {r.guestName && <div className="text-xs text-gray-400">{r.guestName}</div>}
+                  </td>
+                  <td className="px-4 py-2 text-end">
+                    {(r.status === 0 || r.status === 1) && (
+                      <button onClick={() => setCancelTarget(r)} className="text-red-600 underline">
+                        {t("bookings.cancelAction")}
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))}
             {!loading && rows.length === 0 && (
               <tr>
                 <td colSpan={9} className="px-4 py-6 text-center text-gray-400">
-                  لا توجد حجوزات مطابقة
+                  {t("bookings.noBookings")}
                 </td>
               </tr>
             )}
@@ -173,9 +175,9 @@ export default function BookingsPage() {
 
       <ConfirmDialog
         open={Boolean(cancelTarget)}
-        title="إلغاء الحجز"
-        message={`هل أنت متأكد من إلغاء الحجز ${cancelTarget?.reference}؟ سيتم تحرير كل الأوقات المرتبطة به.`}
-        confirmLabel={cancelling ? "جارٍ الإلغاء..." : "إلغاء الحجز"}
+        title={t("bookings.cancelDialogTitle")}
+        message={t("bookings.cancelDialogMessage", { ref: cancelTarget?.reference })}
+        confirmLabel={cancelling ? t("bookings.cancelling") : t("bookings.cancelDialogTitle")}
         danger
         onConfirm={handleCancel}
         onCancel={() => setCancelTarget(null)}

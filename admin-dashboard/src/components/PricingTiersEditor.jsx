@@ -1,8 +1,10 @@
 import { useState } from "react";
+import { useLanguage } from "../i18n/LanguageContext";
 
 export default function PricingTiersEditor({ tiers, onSave, saving }) {
+  const { t } = useLanguage();
   const [rows, setRows] = useState(
-    tiers.length > 0 ? tiers.map((t) => ({ minHours: t.minHours, pricePerHour: t.pricePerHour })) : [],
+    tiers.length > 0 ? tiers.map((tier) => ({ minHours: tier.minHours, pricePerHour: tier.pricePerHour })) : [],
   );
 
   function addRow() {
@@ -19,10 +21,10 @@ export default function PricingTiersEditor({ tiers, onSave, saving }) {
 
   return (
     <div className="space-y-2">
-      {rows.length === 0 && <p className="text-xs text-gray-400">لا توجد عروض متدرجة — سيتم استخدام السعر الأساسي دائماً</p>}
+      {rows.length === 0 && <p className="text-xs text-gray-400">{t("courts.noTiers")}</p>}
       {rows.map((row, i) => (
         <div key={i} className="flex items-center gap-2">
-          <span className="text-xs text-gray-500">من</span>
+          <span className="text-xs text-gray-500">{t("courts.fromHours")}</span>
           <input
             type="number"
             min={1}
@@ -30,7 +32,7 @@ export default function PricingTiersEditor({ tiers, onSave, saving }) {
             onChange={(e) => updateRow(i, "minHours", Number(e.target.value))}
             className="w-16 rounded border border-gray-200 px-2 py-1 text-sm"
           />
-          <span className="text-xs text-gray-500">ساعة، السعر</span>
+          <span className="text-xs text-gray-500">{t("courts.hoursPrice")}</span>
           <input
             type="number"
             min={0}
@@ -39,7 +41,7 @@ export default function PricingTiersEditor({ tiers, onSave, saving }) {
             onChange={(e) => updateRow(i, "pricePerHour", e.target.value)}
             className="w-24 rounded border border-gray-200 px-2 py-1 text-sm"
           />
-          <span className="text-xs text-gray-500">ر.ع/ساعة</span>
+          <span className="text-xs text-gray-500">{t("courts.pricePerHourUnit")}</span>
           <button onClick={() => removeRow(i)} className="text-red-500 hover:text-red-700" type="button">
             ✕
           </button>
@@ -47,7 +49,7 @@ export default function PricingTiersEditor({ tiers, onSave, saving }) {
       ))}
       <div className="flex gap-2 pt-1">
         <button type="button" onClick={addRow} className="text-xs font-medium text-court-700 underline">
-          + إضافة عرض
+          {t("courts.addOffer")}
         </button>
         <button
           type="button"
@@ -57,7 +59,7 @@ export default function PricingTiersEditor({ tiers, onSave, saving }) {
           }
           className="rounded-full bg-court-600 px-3 py-1 text-xs font-bold text-white disabled:opacity-50"
         >
-          {saving ? "جارٍ الحفظ..." : "حفظ العروض"}
+          {saving ? t("courts.savingOffers") : t("courts.saveOffers")}
         </button>
       </div>
     </div>

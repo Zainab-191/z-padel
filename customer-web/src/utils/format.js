@@ -1,31 +1,31 @@
-const WEEKDAYS_AR = ["الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
-const MONTHS_AR = [
-  "يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو",
-  "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر",
-];
+import { translations } from "../i18n/translations";
 
 /** @param {string} isoDate e.g. "2026-08-05" */
-export function formatDateLong(isoDate) {
+export function formatDateLong(isoDate, lang) {
+  const dict = translations[lang];
   const [y, m, d] = isoDate.split("-").map(Number);
   const dt = new Date(y, m - 1, d);
-  return `${WEEKDAYS_AR[dt.getDay()]} ${d} ${MONTHS_AR[m - 1]}`;
+  return `${dict.weekdaysLong[dt.getDay()]} ${d} ${dict.months[m - 1]}`;
 }
 
-export function formatDateShort(isoDate) {
+export function formatDateShort(isoDate, lang) {
+  const dict = translations[lang];
   const [, m, d] = isoDate.split("-").map(Number);
-  return `${d} ${MONTHS_AR[m - 1]}`;
+  return `${d} ${dict.months[m - 1]}`;
 }
 
 /** @param {string} time e.g. "14:00:00" */
-export function formatTime(time) {
+export function formatTime(time, lang) {
+  const dict = translations[lang];
   const [h, m] = time.split(":").map(Number);
-  const period = h < 12 ? "ص" : "م";
+  const period = h < 12 ? dict.am : dict.pm;
   const h12 = h % 12 === 0 ? 12 : h % 12;
   return m === 0 ? `${h12}:00 ${period}` : `${h12}:${String(m).padStart(2, "0")} ${period}`;
 }
 
-export function formatOMR(amount) {
-  return `${Number(amount).toFixed(3)} ر.ع`;
+export function formatOMR(amount, lang) {
+  const dict = translations[lang];
+  return `${Number(amount).toFixed(3)} ${dict.currency}`;
 }
 
 export function todayIso() {

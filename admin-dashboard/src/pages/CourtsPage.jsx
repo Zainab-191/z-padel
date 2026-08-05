@@ -5,8 +5,10 @@ import CourtForm from "../components/CourtForm";
 import PricingTiersEditor from "../components/PricingTiersEditor";
 import ConfirmDialog from "../components/ConfirmDialog";
 import { formatOMR, formatTime } from "../utils/format";
+import { useLanguage } from "../i18n/LanguageContext";
 
 export default function CourtsPage() {
+  const { t, language } = useLanguage();
   const [courts, setCourts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -77,12 +79,12 @@ export default function CourtsPage() {
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-xl font-extrabold text-court-900">إدارة الملاعب</h1>
+        <h1 className="text-xl font-extrabold text-court-900">{t("courts.title")}</h1>
         <button
           onClick={() => setCreating((c) => !c)}
           className="rounded-full bg-court-600 px-4 py-2 text-sm font-bold text-white hover:bg-court-700"
         >
-          {creating ? "إغلاق" : "+ إضافة ملعب"}
+          {creating ? t("courts.closeForm") : t("courts.addCourt")}
         </button>
       </div>
 
@@ -95,7 +97,7 @@ export default function CourtsPage() {
       )}
 
       {loading ? (
-        <p className="text-gray-400">جارٍ التحميل...</p>
+        <p className="text-gray-400">{t("common.loading")}</p>
       ) : (
         <div className="space-y-4">
           {courts.map((court) => (
@@ -121,18 +123,20 @@ export default function CourtsPage() {
                       <div className="flex items-center gap-2">
                         <h2 className="font-bold text-court-900">{court.name}</h2>
                         {!court.isActive && (
-                          <span className="rounded-full bg-gray-200 px-2 py-0.5 text-xs text-gray-600">معطل</span>
+                          <span className="rounded-full bg-gray-200 px-2 py-0.5 text-xs text-gray-600">
+                            {t("courts.disabled")}
+                          </span>
                         )}
                       </div>
                       {court.description && <p className="text-sm text-gray-500">{court.description}</p>}
                       <p className="mt-1 text-sm text-gray-600">
-                        {formatTime(court.openingTime)} - {formatTime(court.closingTime)} · السعر الأساسي{" "}
-                        {formatOMR(court.basePricePerHour)}/ساعة
+                        {formatTime(court.openingTime, language)} - {formatTime(court.closingTime, language)} ·{" "}
+                        {formatOMR(court.basePricePerHour, language)}/{t("courts.perHour")}
                       </p>
                     </div>
                     <div className="flex gap-3 text-sm">
                       <button onClick={() => setEditingId(court.id)} className="text-court-700 underline">
-                        تعديل
+                        {t("common.edit")}
                       </button>
                       <button
                         onClick={() => {
@@ -141,13 +145,13 @@ export default function CourtsPage() {
                         }}
                         className="text-red-600 underline"
                       >
-                        حذف
+                        {t("common.delete")}
                       </button>
                     </div>
                   </div>
 
                   <div className="mt-4 border-t border-dashed border-gray-200 pt-3">
-                    <p className="mb-2 text-xs font-semibold text-gray-500">الأسعار المتدرجة حسب عدد الساعات</p>
+                    <p className="mb-2 text-xs font-semibold text-gray-500">{t("courts.tiersTitle")}</p>
                     <PricingTiersEditor
                       tiers={court.pricingTiers}
                       saving={savingId === `${court.id}-tiers`}
@@ -158,18 +162,15 @@ export default function CourtsPage() {
               )}
             </div>
           ))}
-          {courts.length === 0 && <p className="text-gray-400">لا توجد ملاعب بعد</p>}
+          {courts.length === 0 && <p className="text-gray-400">{t("courts.noCourtsYet")}</p>}
         </div>
       )}
 
       <ConfirmDialog
         open={Boolean(deleteTarget)}
-        title="حذف الملعب"
-        message={
-          deleteError ||
-          `هل أنت متأكد من حذف "${deleteTarget?.name}"؟ لا يمكن التراجع عن هذا الإجراء. إذا كان للملعب حجوزات سابقة، استخدم "تعديل" وأوقف تفعيله بدلاً من الحذف.`
-        }
-        confirmLabel="حذف"
+        title={t("courts.deleteTitle")}
+        message={deleteError || t("courts.deleteMessage", { name: deleteTarget?.name })}
+        confirmLabel={t("common.delete")}
         danger
         onConfirm={handleDelete}
         onCancel={() => setDeleteTarget(null)}

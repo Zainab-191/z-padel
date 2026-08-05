@@ -1,8 +1,8 @@
+import { useLanguage } from "../i18n/LanguageContext";
 import { addDaysIso, todayIso } from "../utils/format";
 
-const WEEKDAY_SHORT_AR = ["أحد", "إثنين", "ثلاثاء", "أربعاء", "خميس", "جمعة", "سبت"];
-
 export default function DateStrip({ value, onChange, days = 21 }) {
+  const { t, dict } = useLanguage();
   const today = todayIso();
   const dates = Array.from({ length: days }, (_, i) => addDaysIso(today, i));
 
@@ -24,7 +24,7 @@ export default function DateStrip({ value, onChange, days = 21 }) {
                   : "border-court-200 bg-white text-court-900 hover:border-court-400"
               }`}
             >
-              <span className="text-xs">{WEEKDAY_SHORT_AR[dow]}</span>
+              <span className="text-xs">{dict.weekdaysShort[dow]}</span>
               <span className="text-lg font-bold">{d}</span>
               <span className="text-[10px] opacity-70">{m}</span>
             </button>
@@ -32,7 +32,7 @@ export default function DateStrip({ value, onChange, days = 21 }) {
         })}
       </div>
       <label className="flex items-center gap-2 text-sm text-court-700">
-        <span>أو اختر تاريخاً آخر:</span>
+        <span>{t("home.otherDate")}</span>
         <input
           type="date"
           value={value}

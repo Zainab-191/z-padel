@@ -5,8 +5,10 @@ import CartBar from "../components/CartBar";
 import { getAvailability } from "../api/availability";
 import { extractApiError } from "../api/client";
 import { todayIso } from "../utils/format";
+import { useLanguage } from "../i18n/LanguageContext";
 
 export default function HomePage() {
+  const { t } = useLanguage();
   const [date, setDate] = useState(todayIso());
   const [slots, setSlots] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -34,17 +36,15 @@ export default function HomePage() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-6 pb-28">
       <div className="mb-6 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-black/5">
-        <h1 className="mb-1 text-xl font-extrabold text-court-900">احجز ملعبك</h1>
-        <p className="mb-4 text-sm text-gray-500">اختر التاريخ والوقت المناسب — بدون تسجيل حساب</p>
+        <h1 className="mb-1 text-xl font-extrabold text-court-900">{t("home.title")}</h1>
+        <p className="mb-4 text-sm text-gray-500">{t("home.subtitle")}</p>
         <DateStrip value={date} onChange={setDate} />
       </div>
 
       <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-black/5">
-        <h2 className="mb-3 text-sm font-bold text-court-900">الأوقات المتاحة</h2>
+        <h2 className="mb-3 text-sm font-bold text-court-900">{t("home.availableTimes")}</h2>
         <TimeSlotGrid date={date} slots={slots} loading={loading} error={error} />
-        <p className="mt-4 text-xs text-gray-400">
-          * السعر المعروض تقديري لساعة واحدة. عند اختيار ساعتين فأكثر قد يقل السعر تلقائياً حسب العروض المتدرجة.
-        </p>
+        <p className="mt-4 text-xs text-gray-400">{t("home.priceNote")}</p>
       </div>
 
       <CartBar />

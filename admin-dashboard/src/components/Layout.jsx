@@ -1,14 +1,17 @@
 import { NavLink, Outlet } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-
-const NAV_ITEMS = [
-  { to: "/", label: "الحجوزات", end: true },
-  { to: "/courts", label: "الملاعب" },
-  { to: "/closures", label: "الإغلاقات" },
-];
+import { useLanguage } from "../i18n/LanguageContext";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 export default function Layout() {
   const { username, logout } = useAuth();
+  const { t, dict } = useLanguage();
+
+  const navItems = [
+    { to: "/", label: dict.nav.bookings, end: true },
+    { to: "/courts", label: dict.nav.courts },
+    { to: "/closures", label: dict.nav.closures },
+  ];
 
   return (
     <div className="flex min-h-screen flex-col md:flex-row">
@@ -22,11 +25,11 @@ export default function Layout() {
               <span className="text-lg font-extrabold">Z Padel</span>
             </div>
             <button onClick={logout} className="text-xs text-court-100/80 underline md:hidden">
-              {username} · خروج
+              {username} · {t("nav.logout")}
             </button>
           </div>
           <nav className="flex gap-1 overflow-x-auto px-3 pb-3 md:mt-4 md:flex-col md:space-y-1 md:overflow-visible md:pb-0">
-            {NAV_ITEMS.map((item) => (
+            {navItems.map((item) => (
               <NavLink
                 key={item.to}
                 to={item.to}
@@ -44,9 +47,12 @@ export default function Layout() {
         </div>
         <div className="hidden border-t border-court-800 px-5 py-4 text-sm md:block">
           <p className="mb-2 text-court-200">{username}</p>
-          <button onClick={logout} className="text-court-100/80 underline hover:text-white">
-            تسجيل الخروج
-          </button>
+          <div className="flex items-center justify-between">
+            <button onClick={logout} className="text-court-100/80 underline hover:text-white">
+              {t("nav.logout")}
+            </button>
+            <LanguageSwitcher />
+          </div>
         </div>
       </aside>
       <main className="flex-1 overflow-y-auto p-4 md:p-6">

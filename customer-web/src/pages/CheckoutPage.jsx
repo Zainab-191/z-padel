@@ -4,11 +4,13 @@ import { useCart } from "../context/CartContext";
 import { createBooking, initiateThawaniPayment, quoteBooking } from "../api/bookings";
 import { extractApiError } from "../api/client";
 import { formatDateShort, formatOMR, formatTime } from "../utils/format";
+import { useLanguage } from "../i18n/LanguageContext";
 
 const PHONE_REGEX = /^\+?[0-9]{7,15}$/;
 
 export default function CheckoutPage() {
   const { items, removeSlot, clear } = useCart();
+  const { t, language } = useLanguage();
   const navigate = useNavigate();
 
   const [quote, setQuote] = useState(null);
@@ -35,9 +37,9 @@ export default function CheckoutPage() {
   if (items.length === 0) {
     return (
       <div className="mx-auto max-w-2xl px-4 py-16 text-center">
-        <p className="mb-4 text-gray-500">لم تقم باختيار أي وقت بعد.</p>
+        <p className="mb-4 text-gray-500">{t("checkout.noSlotsYet")}</p>
         <button onClick={() => navigate("/")} className="rounded-full bg-court-600 px-6 py-2 font-bold text-white">
-          العودة للحجز
+          {t("checkout.backToBooking")}
         </button>
       </div>
     );
@@ -48,7 +50,7 @@ export default function CheckoutPage() {
     setFormError(null);
 
     if (!PHONE_REGEX.test(phone.trim())) {
-      setFormError("رقم الهاتف غير صحيح. أدخل 7 إلى 15 رقماً، يمكن أن يبدأ بـ +");
+      setFormError(t("checkout.invalidPhone"));
       return;
     }
 
@@ -75,9 +77,9 @@ export default function CheckoutPage() {
       const { message, details } = extractApiError(err);
       if (details?.unavailableSlots?.length) {
         setFormError(
-          `بعض الأوقات لم تعد متاحة (${details.unavailableSlots
-            .map((s) => `${s.date} ${s.startTime}`)
-            .join("، ")}). الرجاء العودة واختيار أوقات أخرى.`,
+          t("checkout.unavailableSlots", {
+            list: details.unavailableSlots.map((s) => `${s.date} ${s.startTime}`).join("، "),
+          }),
         );
       } else {
         setFormError(message);
@@ -91,23 +93,23 @@ export default function CheckoutPage() {
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-6 pb-16">
-      <h1 className="mb-4 text-xl font-extrabold text-court-900">إتمام الحجز</h1>
+      <h1 className="mb-4 text-xl font-extrabold text-court-900">{t("checkout.title")}</h1>
 
       <div className="mb-6 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-black/5">
-        <h2 className="mb-3 text-sm font-bold text-court-900">ملخص الحجز</h2>
+        <h2 className="mb-3 text-sm font-bold text-court-900">{t("checkout.summary")}</h2>
         <ul className="space-y-2">
           {items.map((s) => (
             <li key={`${s.date}_${s.startTime}`} className="flex items-center justify-between text-sm">
               <span>
-                {formatDateShort(s.date)} · {formatTime(s.startTime)}
+                {formatDateShort(s.date, language)} · {formatTime(s.startTime, language)}
               </span>
               <div className="flex items-center gap-3">
-                <span className="font-mono text-gray-500">{formatOMR(s.estimatedPricePerHour)}</span>
+                <span className="font-mono text-gray-500">{formatOMR(s.estimatedPricePerHour, language)}</span>
                 <button
                   type="button"
                   onClick={() => removeSlot(s.date, s.startTime)}
                   className="text-red-500 hover:text-red-700"
-                  aria-label="إزالة"
+                  aria-label={t("checkout.remove")}
                 >
                   ✕
                 </button>
@@ -116,18 +118,20 @@ export default function CheckoutPage() {
           ))}
         </ul>
         <div className="mt-3 flex items-center justify-between border-t border-dashed border-gray-200 pt-3">
-          <span className="text-sm font-medium text-gray-600">الإجمالي {quoteLoading && "(جارٍ التحديث...)"}</span>
-          <span className="text-lg font-extrabold text-court-900">{formatOMR(total)}</span>
+          <span className="text-sm font-medium text-gray-600">
+            {t("checkout.total")} {quoteLoading && t("checkout.updating")}
+          </span>
+          <span className="text-lg font-extrabold text-court-900">{formatOMR(total, language)}</span>
         </div>
         {quoteError && <p className="mt-2 text-xs text-red-600">{quoteError}</p>}
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-black/5">
-        <h2 className="text-sm font-bold text-court-900">بياناتك</h2>
+        <h2 className="text-sm font-bold text-court-900">{t("checkout.yourInfo")}</h2>
 
         <div>
           <label className="mb-1 block text-sm text-gray-600">
-            رقم الهاتف <span className="text-red-500">*</span>
+            {t("checkout.phone")} <span className="text-red-500">*</span>
           </label>
           <input
             type="tel"
@@ -141,7 +145,7 @@ export default function CheckoutPage() {
         </div>
 
         <div>
-          <label className="mb-1 block text-sm text-gray-600">الاسم (اختياري)</label>
+          <label className="mb-1 block text-sm text-gray-600">{t("checkout.name")}</label>
           <input
             type="text"
             value={name}
@@ -151,7 +155,7 @@ export default function CheckoutPage() {
         </div>
 
         <div>
-          <label className="mb-1 block text-sm text-gray-600">البريد الإلكتروني (اختياري)</label>
+          <label className="mb-1 block text-sm text-gray-600">{t("checkout.email")}</label>
           <input
             type="email"
             value={email}
@@ -162,7 +166,7 @@ export default function CheckoutPage() {
         </div>
 
         <div>
-          <label className="mb-2 block text-sm text-gray-600">طريقة الدفع</label>
+          <label className="mb-2 block text-sm text-gray-600">{t("checkout.paymentMethod")}</label>
           <div className="grid grid-cols-2 gap-3">
             <button
               type="button"
@@ -171,7 +175,7 @@ export default function CheckoutPage() {
                 paymentMethod === 0 ? "border-court-600 bg-court-50 text-court-900" : "border-gray-200 text-gray-500"
               }`}
             >
-              الدفع عند الوصول
+              {t("checkout.payOnArrival")}
             </button>
             <button
               type="button"
@@ -180,7 +184,7 @@ export default function CheckoutPage() {
                 paymentMethod === 1 ? "border-court-600 bg-court-50 text-court-900" : "border-gray-200 text-gray-500"
               }`}
             >
-              دفع إلكتروني (ثواني)
+              {t("checkout.payThawani")}
             </button>
           </div>
         </div>
@@ -192,7 +196,7 @@ export default function CheckoutPage() {
           disabled={submitting}
           className="w-full rounded-full bg-ball-500 py-3 font-bold text-court-900 shadow-md transition hover:bg-ball-600 disabled:opacity-50"
         >
-          {submitting ? "جارٍ التأكيد..." : `تأكيد الحجز — ${formatOMR(total)}`}
+          {submitting ? t("checkout.submitting") : `${t("checkout.confirmButton")} — ${formatOMR(total, language)}`}
         </button>
       </form>
     </div>

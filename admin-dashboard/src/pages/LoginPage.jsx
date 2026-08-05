@@ -2,9 +2,12 @@ import { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { extractApiError } from "../api/client";
+import { useLanguage } from "../i18n/LanguageContext";
+import LanguageSwitcher from "../components/LanguageSwitcher";
 
 export default function LoginPage() {
   const { isAuthenticated, login } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -34,11 +37,11 @@ export default function LoginPage() {
           <span className="mb-2 grid h-12 w-12 place-items-center rounded-full bg-ball-500 text-court-900 font-black text-xl">
             Z
           </span>
-          <h1 className="text-lg font-extrabold text-court-900">لوحة تحكم Z Padel</h1>
+          <h1 className="text-lg font-extrabold text-court-900">{t("login.title")}</h1>
         </div>
 
         <div className="mb-4">
-          <label className="mb-1 block text-sm text-gray-600">اسم المستخدم</label>
+          <label className="mb-1 block text-sm text-gray-600">{t("login.username")}</label>
           <input
             type="text"
             required
@@ -51,7 +54,7 @@ export default function LoginPage() {
         </div>
 
         <div className="mb-4">
-          <label className="mb-1 block text-sm text-gray-600">كلمة المرور</label>
+          <label className="mb-1 block text-sm text-gray-600">{t("login.password")}</label>
           <input
             type="password"
             required
@@ -69,8 +72,12 @@ export default function LoginPage() {
           disabled={submitting}
           className="w-full rounded-lg bg-court-600 py-2.5 font-bold text-white transition hover:bg-court-700 disabled:opacity-50"
         >
-          {submitting ? "جارٍ الدخول..." : "دخول"}
+          {submitting ? t("login.submitting") : t("login.submit")}
         </button>
+
+        <div className="mt-4 text-center">
+          <LanguageSwitcher className="!text-court-600" />
+        </div>
       </form>
     </div>
   );
