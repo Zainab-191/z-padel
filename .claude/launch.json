@@ -18,12 +18,6 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev", "--prefix", "admin-dashboard"],
       "port": 5174
-    },
-    {
-      "name": "recruitai",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev", "--prefix", "D:/RecruitAI"],
-      "port": 5175
     }
   ]
 }
