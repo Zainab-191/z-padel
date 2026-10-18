@@ -9,17 +9,17 @@ export default function BookingTicket({ booking }) {
 
   return (
     <div className="mx-auto max-w-md">
-      <div className="overflow-hidden rounded-2xl bg-white shadow-xl ring-1 ring-black/5">
+      <div className="overflow-hidden rounded-2xl bg-white">
         {/* Stub */}
         <div className="court-lines-bg px-6 py-5 text-white">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs text-white/70">{t("ticket.bookingRef")}</p>
-              <p className="font-mono text-2xl font-extrabold tracking-wider" dir="ltr">
+              <p className="text-xs text-gray-600">{t("ticket.bookingRef")}</p>
+              <p className="font-mono text-2xl font-semibold tracking-wider" dir="ltr">
                 {booking.reference}
               </p>
             </div>
-            <span className={`rounded-full px-3 py-1 text-xs font-bold ${statusClass}`}>{statusLabel}</span>
+            <span className={`rounded-full px-3 py-1 text-xs font-semibold ${statusClass}`}>{statusLabel}</span>
           </div>
         </div>
 
@@ -31,7 +31,7 @@ export default function BookingTicket({ booking }) {
 
         <div className="space-y-4 px-6 py-5">
           <div>
-            <p className="mb-2 text-xs font-semibold text-gray-500">{t("ticket.bookedTimes")}</p>
+            <p className="mb-2 text-xs font-semibold text-gray-600">{t("ticket.bookedTimes")}</p>
             <ul className="space-y-2">
               {booking.slots.map((s) => (
                 <li
@@ -42,15 +42,15 @@ export default function BookingTicket({ booking }) {
                     {formatDateShort(s.date, language)} · {formatTime(s.startTime, language)} -{" "}
                     {formatTime(s.endTime, language)}
                   </span>
-                  <span className="font-mono text-court-700">{formatOMR(s.price, language)}</span>
+                  <span className="font-mono text-gray-600">{formatOMR(s.price, language)}</span>
                 </li>
               ))}
             </ul>
           </div>
 
-          <div className="flex items-center justify-between border-t border-dashed border-gray-200 pt-4">
-            <span className="text-sm text-gray-500">{dict.paymentMethodLabel[booking.paymentMethod]}</span>
-            <span className="text-lg font-extrabold text-court-900">{formatOMR(booking.totalAmount, language)}</span>
+          <div className="flex items-center justify-between border-t border-dashed border-court-200 pt-4">
+            <span className="text-sm text-gray-600">{dict.paymentMethodLabel[booking.paymentMethod]}</span>
+            <span className="text-lg font-semibold text-court-900">{formatOMR(booking.totalAmount, language)}</span>
           </div>
 
           {booking.status === 0 && booking.expiresAt && (

@@ -22,11 +22,11 @@ export default function BookingPage() {
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-10">
-      {loading && <p className="text-center text-gray-400">{t("common.loading")}</p>}
+      {loading && <p role="status" className="text-center text-gray-600">{t("common.loading")}</p>}
       {error && (
         <div className="text-center">
-          <p className="mb-4 rounded-lg bg-red-50 px-4 py-3 text-red-700">{error}</p>
-          <Link to="/" className="text-court-700 underline">
+          <p role="alert" className="mb-4 rounded-xl bg-red-50 px-4 py-3 text-red-700">{error}</p>
+          <Link to="/" className="inline-flex min-h-11 items-center text-court-600 underline-offset-4 hover:underline">
             {t("common.back")}
           </Link>
         </div>
@@ -35,7 +35,7 @@ export default function BookingPage() {
         <>
           <BookingTicket booking={booking} />
           <div className="mt-6 text-center">
-            <Link to="/" className="text-sm text-court-700 underline">
+            <Link to="/" className="inline-flex min-h-11 items-center text-sm text-court-600 underline-offset-4 hover:underline">
               {t("common.back")}
             </Link>
           </div>

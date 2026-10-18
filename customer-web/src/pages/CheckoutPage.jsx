@@ -37,8 +37,8 @@ export default function CheckoutPage() {
   if (items.length === 0) {
     return (
       <div className="mx-auto max-w-2xl px-4 py-16 text-center">
-        <p className="mb-4 text-gray-500">{t("checkout.noSlotsYet")}</p>
-        <button onClick={() => navigate("/")} className="rounded-full bg-court-600 px-6 py-2 font-bold text-white">
+        <p className="mb-4 text-gray-600">{t("checkout.noSlotsYet")}</p>
+        <button onClick={() => navigate("/")} className="min-h-12 rounded-full bg-court-600 px-7 font-semibold text-white transition hover:bg-court-500">
           {t("checkout.backToBooking")}
         </button>
       </div>
@@ -93,22 +93,22 @@ export default function CheckoutPage() {
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-6 pb-16">
-      <h1 className="mb-4 text-xl font-extrabold text-court-900">{t("checkout.title")}</h1>
+      <h1 className="mb-4 text-2xl font-semibold text-court-900">{t("checkout.title")}</h1>
 
-      <div className="mb-6 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-black/5">
-        <h2 className="mb-3 text-sm font-bold text-court-900">{t("checkout.summary")}</h2>
+      <div className="mb-6 rounded-2xl bg-white p-5">
+        <h2 className="mb-3 text-base font-semibold text-court-900">{t("checkout.summary")}</h2>
         <ul className="space-y-2">
           {items.map((s) => (
-            <li key={`${s.date}_${s.startTime}`} className="flex items-center justify-between text-sm">
+            <li key={`${s.date}_${s.startTime}`} className="flex min-h-11 items-center justify-between text-sm">
               <span>
                 {formatDateShort(s.date, language)} · {formatTime(s.startTime, language)}
               </span>
               <div className="flex items-center gap-3">
-                <span className="font-mono text-gray-500">{formatOMR(s.estimatedPricePerHour, language)}</span>
+                <span className="font-mono text-gray-600">{formatOMR(s.estimatedPricePerHour, language)}</span>
                 <button
                   type="button"
                   onClick={() => removeSlot(s.date, s.startTime)}
-                  className="text-red-500 hover:text-red-700"
+                  className="grid h-11 w-11 place-items-center rounded-full text-red-600 transition hover:bg-red-50"
                   aria-label={t("checkout.remove")}
                 >
                   ✕
@@ -117,62 +117,71 @@ export default function CheckoutPage() {
             </li>
           ))}
         </ul>
-        <div className="mt-3 flex items-center justify-between border-t border-dashed border-gray-200 pt-3">
+        <div className="mt-3 flex items-center justify-between border-t border-dashed border-court-200 pt-3">
           <span className="text-sm font-medium text-gray-600">
             {t("checkout.total")} {quoteLoading && t("checkout.updating")}
           </span>
-          <span className="text-lg font-extrabold text-court-900">{formatOMR(total, language)}</span>
+          <span className="text-lg font-semibold text-court-900">{formatOMR(total, language)}</span>
         </div>
-        {quoteError && <p className="mt-2 text-xs text-red-600">{quoteError}</p>}
+        {quoteError && <p role="alert" className="mt-2 text-xs text-red-700">{quoteError}</p>}
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-black/5">
-        <h2 className="text-sm font-bold text-court-900">{t("checkout.yourInfo")}</h2>
+      <form onSubmit={handleSubmit} className="space-y-4 rounded-2xl bg-white p-5">
+        <h2 className="text-base font-semibold text-court-900">{t("checkout.yourInfo")}</h2>
 
         <div>
-          <label className="mb-1 block text-sm text-gray-600">
-            {t("checkout.phone")} <span className="text-red-500">*</span>
+          <label htmlFor="guest-phone" className="mb-1.5 block text-sm font-medium text-court-900">
+            {t("checkout.phone")} <span className="text-red-600" aria-hidden="true">*</span>
           </label>
           <input
+            id="guest-phone"
             type="tel"
+            inputMode="tel"
+            autoComplete="tel"
             required
+            aria-invalid={formError === t("checkout.invalidPhone")}
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             placeholder="+968XXXXXXXX"
-            className="w-full rounded-lg border border-gray-200 px-3 py-2 focus:border-court-500 focus:outline-none"
+            className="w-full min-h-12 rounded-xl border border-court-200 bg-white px-4 text-base focus:border-court-600"
             dir="ltr"
           />
         </div>
 
         <div>
-          <label className="mb-1 block text-sm text-gray-600">{t("checkout.name")}</label>
+          <label htmlFor="guest-name" className="mb-1.5 block text-sm font-medium text-court-900">{t("checkout.name")}</label>
           <input
+            id="guest-name"
             type="text"
+            autoComplete="name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full rounded-lg border border-gray-200 px-3 py-2 focus:border-court-500 focus:outline-none"
+            className="w-full min-h-12 rounded-xl border border-court-200 bg-white px-4 text-base focus:border-court-600"
           />
         </div>
 
         <div>
-          <label className="mb-1 block text-sm text-gray-600">{t("checkout.email")}</label>
+          <label htmlFor="guest-email" className="mb-1.5 block text-sm font-medium text-court-900">{t("checkout.email")}</label>
           <input
+            id="guest-email"
             type="email"
+            autoComplete="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full rounded-lg border border-gray-200 px-3 py-2 focus:border-court-500 focus:outline-none"
+            className="w-full min-h-12 rounded-xl border border-court-200 bg-white px-4 text-base focus:border-court-600"
             dir="ltr"
           />
         </div>
 
         <div>
-          <label className="mb-2 block text-sm text-gray-600">{t("checkout.paymentMethod")}</label>
-          <div className="grid grid-cols-2 gap-3">
+          <span id="pay-label" className="mb-2 block text-sm font-medium text-court-900">{t("checkout.paymentMethod")}</span>
+          <div className="grid grid-cols-2 gap-3" role="group" aria-labelledby="pay-label">
             <button
               type="button"
               onClick={() => setPaymentMethod(0)}
-              className={`rounded-xl border px-4 py-3 text-sm font-medium ${
-                paymentMethod === 0 ? "border-court-600 bg-court-50 text-court-900" : "border-gray-200 text-gray-500"
+              aria-pressed={paymentMethod === 0}
+              className={`min-h-14 rounded-xl border px-4 text-sm font-medium transition ${
+                paymentMethod === 0 ? "border-court-600 bg-court-600 text-white" : "border-court-200 bg-white text-court-900 hover:border-court-400"
               }`}
             >
               {t("checkout.payOnArrival")}
@@ -180,8 +189,9 @@ export default function CheckoutPage() {
             <button
               type="button"
               onClick={() => setPaymentMethod(1)}
-              className={`rounded-xl border px-4 py-3 text-sm font-medium ${
-                paymentMethod === 1 ? "border-court-600 bg-court-50 text-court-900" : "border-gray-200 text-gray-500"
+              aria-pressed={paymentMethod === 1}
+              className={`min-h-14 rounded-xl border px-4 text-sm font-medium transition ${
+                paymentMethod === 1 ? "border-court-600 bg-court-600 text-white" : "border-court-200 bg-white text-court-900 hover:border-court-400"
               }`}
             >
               {t("checkout.payThawani")}
@@ -189,12 +199,12 @@ export default function CheckoutPage() {
           </div>
         </div>
 
-        {formError && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{formError}</p>}
+        {formError && <p role="alert" className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{formError}</p>}
 
         <button
           type="submit"
           disabled={submitting}
-          className="w-full rounded-full bg-ball-500 py-3 font-bold text-court-900 shadow-md transition hover:bg-ball-600 disabled:opacity-50"
+          className="min-h-12 w-full rounded-full bg-ball-500 font-semibold transition hover:bg-ball-600 active:scale-[0.99] disabled:opacity-50"
         >
           {submitting ? t("checkout.submitting") : `${t("checkout.confirmButton")} — ${formatOMR(total, language)}`}
         </button>

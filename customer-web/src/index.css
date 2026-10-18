@@ -1,39 +1,102 @@
 @import "tailwindcss";
 
+/* Apple style — white gallery.
+   Studio Mist canvas, white 28px shadowless cards, Ink type, one quiet blue
+   for compact conversion pills. The original court/ball palette tokens are
+   remapped so every existing utility class picks up the new look. */
 @theme {
-  --font-sans: "Tajawal", "Segoe UI", sans-serif;
+  --font-sans: "SF Pro Text", "Inter", "Tajawal", "Helvetica Neue", Arial, sans-serif;
 
-  /* Court — deep artificial-turf green, the primary brand color */
-  --color-court-50: #eefbf5;
-  --color-court-100: #d6f5e6;
-  --color-court-200: #aeebce;
-  --color-court-300: #7adcb0;
-  --color-court-400: #45c78d;
-  --color-court-500: #22a874;
-  --color-court-600: #15855c;
-  --color-court-700: #12694a;
-  --color-court-800: #12543d;
-  --color-court-900: #0f4534;
-  --color-court-950: #082720;
+  /* court-* : mist / silver / ink ramp, blue for interactive state */
+  --color-court-50: #f5f5f7;   /* Studio Mist - canvas */
+  --color-court-100: #f5f5f7;
+  --color-court-200: #d6d6d6;  /* Hairline Silver */
+  --color-court-300: #d6d6d6;
+  --color-court-400: #86868b;  /* Steel */
+  --color-court-500: #0071e3;
+  --color-court-600: #0071e3;  /* Pricing Blue - selected state */
+  --color-court-700: #1d1d1f;
+  --color-court-800: #1d1d1f;
+  --color-court-900: #1d1d1f;  /* Ink */
+  --color-court-950: #1d1d1f;
 
-  /* Ball — signature neon accent, used sparingly for primary actions */
-  --color-ball-400: #e2f66b;
-  --color-ball-500: #cbe62c;
-  --color-ball-600: #a8c018;
+  /* ball-* : filled conversion pills */
+  --color-ball-400: #0071e3;
+  --color-ball-500: #0071e3;
+  --color-ball-600: #0077ed;
+
+  --color-gray-50: #fafafc;
+  --color-gray-100: #f5f5f7;
+  --color-gray-200: #d6d6d6;
+  --color-gray-300: #d6d6d6;
+  --color-gray-400: #6e6e73;
+  --color-gray-500: #6e6e73;
+  --color-gray-600: #6e6e73;
+  --color-gray-700: #1d1d1f;
+  --color-gray-800: #1d1d1f;
+  --color-gray-900: #1d1d1f;
+
+  --color-amber-50: #fafafc;
+  --color-amber-700: #b64400;  /* Launch Orange */
+
+  --radius-lg: 12px;
+  --radius-xl: 14px;
+  --radius-2xl: 28px;
+  --radius-3xl: 28px;
+  --shadow-sm: none; --shadow-md: none; --shadow-lg: none; --shadow-xl: none;
 }
 
-html, body {
-  font-family: var(--font-sans);
-}
+html, body { font-family: var(--font-sans); }
 
 body {
-  background-color: var(--color-court-50);
+  background-color: #f5f5f7;
+  color: #1d1d1f;
+  font-size: 17px;
+  line-height: 1.47;
+  letter-spacing: -0.374px;
 }
 
-/* Subtle court-line texture used behind hero/header sections */
-.court-lines-bg {
-  background-image:
-    linear-gradient(var(--color-court-800), var(--color-court-800)),
-    repeating-linear-gradient(90deg, transparent 0 46px, rgba(255,255,255,0.06) 46px 48px);
-  background-blend-mode: normal;
+/* no elevation anywhere */
+*, *::before, *::after { box-shadow: none !important; }
+
+/* Weights: 600 for headings, 400 body */
+.font-bold, .font-extrabold, .font-black, .font-semibold { font-weight: 600 !important; }
+.font-medium { font-weight: 500 !important; }
+
+/* Arabic joins letters: negative tracking would collide them */
+[dir="rtl"] body, [dir="rtl"] * { letter-spacing: 0 !important; }
+
+h1 { font-size: 32px; line-height: 1.1; letter-spacing: -0.5px; }
+h2 { font-size: 17px; line-height: 1.24; }
+.text-sm { letter-spacing: -0.224px; }
+.text-xs { letter-spacing: -0.12px; }
+
+/* Cards: white, 28px, borderless (no ring) */
+.ring-1 { --tw-ring-shadow: 0 0 #0000 !important; }
+.rounded-2xl { border-radius: 28px; }
+
+/* Filled pills: white 12–14px text on Pricing Blue */
+[class*="bg-ball-"] { color: #fff !important; border-radius: 9999px; }
+[class*="bg-ball-"]:hover { background-color: #0077ed; }
+
+/* Header: white local bar with a hairline, Ink text */
+.court-lines-bg { background: #fff; color: #1d1d1f; border-bottom: 1px solid #d6d6d6; }
+.court-lines-bg * { color: #1d1d1f !important; }
+.court-lines-bg a, .court-lines-bg button { border-color: #86868b !important; }
+.court-lines-bg a:hover, .court-lines-bg button:hover { background: #f5f5f7 !important; }
+.court-lines-bg .bg-ball-500 { background: #0071e3 !important; color: #fff !important; border: 0 !important; }
+
+/* Text links read in Apple Blue */
+a:not([class]) { color: #0066cc; }
+
+/* Keyboard focus: visible ring on every interactive element */
+:focus-visible { outline: 2px solid #0071e3; outline-offset: 2px; }
+button, a, input { -webkit-tap-highlight-color: transparent; }
+
+/* Hero title sits on a photo: keep it white despite global colour rules */
+section h1 { letter-spacing: -0.3px; }
+
+/* Respect reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
 }
