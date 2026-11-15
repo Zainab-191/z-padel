@@ -1,3 +1,54 @@
+# Z Padel — Padel Court Booking Platform
+
+A full-stack platform for booking padel courts: a customer website where guests book without creating an account, and a complete admin dashboard, both on top of one REST API built with Clean Architecture. The interface is bilingual (Arabic with RTL layout, and English).
+
+**Stack:** ASP.NET Core (.NET 8) · Entity Framework Core · SQL Server · React 19 · Vite · Tailwind CSS · JWT
+
+> The detailed documentation below is in Arabic. This English section summarizes the project and how to run it.
+
+## Features
+
+- **Guest booking:** pick a date and hours, confirm, and get a booking reference. No account needed.
+- **Admin dashboard:** manage courts, pricing tiers, bookings and cancellations, protected by JWT authentication.
+- **Pooled availability:** an hour is available as long as at least one active court is free. A court is assigned only at confirmation, inside a single database transaction, with an automatic retry on race conditions.
+- **No double booking, enforced by the database:** a filtered unique index on `BookingSlots(CourtId, Date, StartTime) WHERE ReleasedAt IS NULL`. Cancelled, expired or failed slots are released (not deleted), so history and reports stay complete.
+- **Court identity hidden from customers at API level:** customer-facing DTOs contain no court id or name. Only the admin dashboard sees courts.
+- **Payments:** pay on arrival, or online through the Thawani gateway (sandbox). The paid amount is verified server-side by re-querying Thawani before a booking is confirmed.
+- **Automatic release of unpaid bookings:** a background service releases online-payment bookings that are not completed within 10 minutes.
+- **Tiered pricing:** the total hours in one booking request decide the price tier applied to each hour.
+- **Security and reliability:** FluentValidation, rate limiting (admin login and booking creation), Serilog logging, centralized `ProblemDetails` error handling, Swagger/OpenAPI documentation.
+- **Arabic / English:** a language switch changes all text, direction (RTL / LTR), dates, time and currency formats.
+
+## Project structure
+
+```
+backend/                 .NET 8 Web API (Domain / Application / Infrastructure / Api)
+customer-web/            React + Vite: customer website (guest booking)
+admin-dashboard/         React + Vite: admin dashboard
+```
+
+## Quick start
+
+Requirements: .NET 8 SDK, Node.js 18+, and a local SQL Server (Express is fine).
+
+```bash
+# 1) API  ->  http://localhost:5100  (Swagger: /swagger)
+cd backend
+dotnet run --project src/ZPadel.Api/ZPadel.Api.csproj
+
+# 2) Customer website  ->  http://localhost:5173
+cd customer-web && npm install && npm run dev
+
+# 3) Admin dashboard  ->  http://localhost:5174
+cd admin-dashboard && npm install && npm run dev
+```
+
+On first run the API applies the EF Core migrations, creates the `ZPadelDb` database, and seeds a default admin user and three sample courts. See the default admin login further below, and change it before any real use.
+
+---
+
+## بالعربية
+
 # Z Padel — منصة حجز ملاعب البادل
 
 منصة إلكترونية لحجز ملاعب البادل: واجهة عميل بدون تسجيل حساب، ولوحة تحكم إدارية كاملة، خلف API واحد بمعمارية Clean Architecture.
@@ -12,14 +63,14 @@ Z Padel/
       ZPadel.Application/   # DTOs، Validators، منطق الأعمال (الحجز، التسعير، التوفر)
       ZPadel.Infrastructure/# EF Core + SQL Server، JWT، Thawani client، الـ Migrations
       ZPadel.Api/            # Controllers، Middleware، DI، Swagger
-  customer-web/             # React 18 + Vite — واجهة العميل (Guest booking)
-  admin-dashboard/          # React 18 + Vite — لوحة التحكم الإدارية
+  customer-web/             # React 19 + Vite — واجهة العميل (Guest booking)
+  admin-dashboard/          # React 19 + Vite — لوحة التحكم الإدارية
 ```
 
 ## التقنيات المستخدمة
 
 - **Backend:** .NET 8 Web API، Clean Architecture (Domain / Application / Infrastructure / API)، Entity Framework Core (Code-First) على SQL Server، FluentValidation، JWT Authentication، Serilog، ASP.NET Core Rate Limiting، Swagger/OpenAPI.
-- **Frontend:** React 18 + Vite + React Router + Axios + Tailwind CSS v4 (تطبيقان منفصلان تماماً لضمان عدم تسرب أي بيانات إدارية لتطبيق العميل).
+- **Frontend:** React 19 + Vite + React Router + Axios + Tailwind CSS v4 (تطبيقان منفصلان تماماً لضمان عدم تسرب أي بيانات إدارية لتطبيق العميل).
 - **قاعدة البيانات:** SQL Server (يعمل هنا على `SQLEXPRESS` محلياً)، عبر EF Core Migrations.
 - **الدفع:** الدفع عند الوصول، والدفع الإلكتروني عبر بوابة **ثواني (Thawani)** — بيئة Sandbox.
 
